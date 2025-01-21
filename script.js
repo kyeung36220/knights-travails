@@ -48,7 +48,7 @@ class Cell {
 
 function findShortestPath(startCell, endCell) {
     const startingPosition = new Cell([], startCell)
-    let allValidPaths = []
+    let found = false // halts recursion as soon as solution is found
     let shortestPath = [1,2,3,4,5,6,7,8] // numbers are just filler to be larger than largest path
 
     // checks if start and end are at the same place
@@ -57,15 +57,7 @@ function findShortestPath(startCell, endCell) {
     }
 
     findShortestPathRecursion(startingPosition)
-
-    // finds shortestPath out of all valid paths of 7 moves
-    for (let i = 0; i < allValidPaths.length; i++) {
-        if (shortestPath.length > allValidPaths[i].length) {
-            shortestPath = allValidPaths[i]
-        }
-    }
-
-    shortestPath.push(endCell)
+    shortestPath.push(endCell) // recursion stops when cell is found in next iteration so I just tack this on at the end
 
     let returnedString = `You made it in ${shortestPath.length - 1} moves! Here's your path:\n`
     for (let i = 0; i < shortestPath.length; i++) {
@@ -89,15 +81,18 @@ function findShortestPath(startCell, endCell) {
         // if possible cell contains the end cell, then it is a valid path
         for (let i = 0; i < possibleCells.length; i++) {
             if (JSON.stringify(possibleCells[i]) === JSON.stringify(endCell)) {
-                allValidPaths.push(cell.history)
-                return
+                shortestPath = cell.history
+                found = true
             }
         }
 
         // recursively call this function while creating a new cell with it's path history
         for (let i = 0; i < possibleCells.length; i++) {
-            findShortestPathRecursion(new Cell([...cell.history], possibleCells[i]))
+            if (found === false) {
+                findShortestPathRecursion(new Cell([...cell.history], possibleCells[i]))
+            }
         }
+        return cell.history
     }
 }
 
@@ -122,4 +117,4 @@ function isCellInBoard(cell, invalidCells) {
     return true
 }
 
-console.log(findShortestPath([3,3], [3,3]))
+console.log(findShortestPath([7,7], [0,0]))
